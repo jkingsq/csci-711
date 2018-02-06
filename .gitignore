@@ -1,2 +1,8 @@
+*
+!*.*
 *.o
 *.swp
+CMakeFiles
+CMakeCache.txt
+Makefile
+*.cmake
