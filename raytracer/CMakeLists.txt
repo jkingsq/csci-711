@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
+set(CMAKE_BUILD_TYPE debug)
 project(Raytracer)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
