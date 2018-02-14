@@ -29,7 +29,7 @@ SolidBucket solidBucketInsert(SolidBucket bucket, Solid solid) {
 
 int solidBucketLength(SolidBucket bucket) {
     int result = 0;
-    while(list != NULL){
+    while(bucket != NULL){
         result++;
         bucket = bucket->next;
     }

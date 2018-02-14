@@ -7,6 +7,22 @@ typedef struct Vector {
     double z;
 } Vector;
 
+// unit vectors
+extern const Vector unitX;
+extern const Vector unitY;
+extern const Vector unitZ;
+
+// usually better read as 'zero vector'
+extern const Vector origin;
+
+Vector vectorSum(Vector u, Vector v);
+
+Vector vectorDiff(Vector u, Vector v);
+
+Vector vectorScale(double scalar, Vector v);
+
+Vector vectorCross(Vector u, Vector v);
+
 double vectorMagnitude(Vector v);
 
 Vector vectorNormalize(Vector v);
