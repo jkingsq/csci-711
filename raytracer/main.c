@@ -1,6 +1,11 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
+#include "Matrix.h"
+#include "Solid.h"
+#include "Vector.h"
+#include "Ray.h"
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 SDL_Color black = {0, 0, 0, 255};
@@ -13,6 +18,8 @@ SDL_Surface *windowSurface = NULL;
 SDL_Surface *background = NULL;
 
 SDL_Renderer *renderer = NULL;
+
+Vector cameraCenter = {-0.75, 1.25, 8.0};
 
 int startSDL() {
     int result = 0;
@@ -38,20 +45,6 @@ int startSDL() {
     return result;
 }
 
-int loadImages() {
-    int result = 0;
-
-    char *bgFileName = "blank.bmp";
-    background = SDL_LoadBMP(bgFileName);
-    if(background == NULL) {
-        fprintf(stderr, "Unable to load file: %s\nSDL Error:%s\n\n",
-            bgFileName, SDL_GetError());
-        result = 1;
-    }
-
-    return result;
-}
-
 void quit() {
     SDL_DestroyWindow(window);
     SDL_FreeSurface(background);
@@ -60,22 +53,28 @@ void quit() {
     SDL_Quit();
 }
 
+void draw(SolidBucket objects) {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+    for(int i = 0; i < WINDOW_HEIGHT; i++) {
+        for(int j = 0; j < WINDOW_WIDTH; j++) {
+            SDL_RenderDrawPoint(renderer, j, i);
+        }
+    }
+    SDL_RenderPresent(renderer);
+}
+
 int main(int argc, char* argv[]) {
     if(startSDL()) {
         fprintf(stderr, "Failed to initialize.  Exiting.\n");
     } else {
-        if(loadImages()) {
-            fprintf(stderr,
-                "Warning: Could not load images. Continuing anyway.\n");
-        } else {
-            //SDL_BlitSurface(background, NULL, windowSurface, NULL);
+        //draw rectangle
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 
-            //draw rectangle
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(renderer, &frame);
-            SDL_RenderPresent(renderer);
-            SDL_Delay(2000);
-        }
+        SDL_RenderFillRect(renderer, &frame);
+        SDL_RenderPresent(renderer);
+
+        draw(NULL);
+        SDL_Delay(2000);
     }
     quit();
     return 0;
