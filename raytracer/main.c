@@ -84,10 +84,10 @@ Ray makeRay(int x, int y) {
     result.point = cameraCenter;
     double tx = (double)x / (double)WINDOW_WIDTH;
     double ty = (double)y / (double)WINDOW_HEIGHT;
-    double aspect = (double)WINDOW_WIDTH / (double)WINDOW_HEIGHT;
+    double aspect = (double)WINDOW_HEIGHT / (double)WINDOW_WIDTH;
 
-    double planeWidth = sin(cameraFOV*aspect);
-    double planeHeight = sin(cameraFOV);
+    double planeWidth = sin(cameraFOV);
+    double planeHeight = sin(cameraFOV*aspect);
     Vector planeX = vectorScale(planeWidth, unitX);
     Vector planeY = vectorScale(planeHeight, unitY);
 
