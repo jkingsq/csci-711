@@ -12,6 +12,7 @@ extern const Vector unitX;
 extern const Vector unitY;
 extern const Vector unitZ;
 extern const Vector vectorNone;
+#define VECTOR_NONE {-INFINITY, -INFINITY, -INFINITY}
 
 // usually better read as 'zero vector'
 extern const Vector origin;

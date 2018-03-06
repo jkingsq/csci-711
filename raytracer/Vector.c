@@ -1,11 +1,12 @@
 #include <float.h>
+#include <math.h>
 #include "Vector.h"
 
 // unit vectors
 const Vector unitX = {1.0, 0.0, 0.0};
 const Vector unitY = {0.0, 1.0, 0.0};
 const Vector unitZ = {0.0, 0.0, 1.0};
-const Vector vectorNone = {DBL_MAX, DBL_MAX, DBL_MAX};
+const Vector vectorNone = VECTOR_NONE;
 
 // usually better read as 'zero vector'
 const Vector origin = {0.0, 0.0, 0.0};

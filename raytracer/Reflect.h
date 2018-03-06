@@ -5,7 +5,9 @@
 #include "Solid.h"
 #include "Ray.h"
 
-SDL_Color rayCollision(Ray ray, SolidBucket objects);
+extern const Reflection reflectionNone;
+
+Reflection getReflection(Ray ray, SolidBucket objects);
 
 Vector raySphereIntersect(Ray ray, Sphere sphere);
 

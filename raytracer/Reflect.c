@@ -5,17 +5,37 @@
 #include "Ray.h"
 #include "Reflect.h"
 
+const Reflection reflectionNone = {
+    0,          // hit
+    VECTOR_NONE, // intersect
+    {0, 0, 0, 0}   // color
+};
+
 SDL_Color background(Ray ray) {
     SDL_Color result;
-    result.r = fabs(ray.direction.x) * 255;
-    result.g = fabs(ray.direction.y) * 255;
-    result.b = ray.direction.z * ray.direction.z * 64;
+    result.r = 255 - fabs(ray.direction.x) * 255;
+    result.g = 255 - fabs(ray.direction.y) * 255;
+    result.b = 255 - ray.direction.z * ray.direction.z * 64;
     result.a = 255;
     return result;
 }
 
-SDL_Color rayCollision(Ray ray, SolidBucket objects) {
-    return background(ray);
+Reflection testSolid(Ray ray, Solid solid) {
+    return (solid.reflect)(ray, solid.figure);
+}
+
+Reflection getReflection(Ray ray, SolidBucket objects) {
+    Reflection result = reflectionNone;
+    SolidBucket object = objects;
+    while(object != NULL) {
+        Reflection temp = testSolid(ray, object->solid);
+        if(temp.intersect.z > result.intersect.z)
+            result = temp;
+        object = object->next;
+    }
+    if(!result.hit)
+        result.color = background(ray);
+    return result;
 }
 
 Vector raySphereIntersect(Ray ray, Sphere sphere) {
