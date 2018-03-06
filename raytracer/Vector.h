@@ -11,6 +11,7 @@ typedef struct Vector {
 extern const Vector unitX;
 extern const Vector unitY;
 extern const Vector unitZ;
+extern const Vector vectorNone;
 
 // usually better read as 'zero vector'
 extern const Vector origin;
@@ -25,6 +26,12 @@ Vector vectorCross(Vector u, Vector v);
 
 double vectorMagnitude(Vector v);
 
+double vectorDist(Vector u, Vector v);
+
 Vector vectorNormalize(Vector v);
+
+int vectorEqual(Vector u, Vector v);
+
+int isVector(Vector v);
 
 #endif

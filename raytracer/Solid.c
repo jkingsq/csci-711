@@ -1,15 +1,6 @@
 #include <stdlib.h>
+#include "Figure.h"
 #include "Solid.h"
-
-int aabbIntersect(AABB a, AABB b) {
-    if(a.minX > b.maxX || a.maxX > b.minX)
-        return 0;
-    if(a.minX > b.maxY || a.maxY > b.minY)
-        return 0;
-    if(a.minZ > b.maxZ || a.maxZ > b.minZ)
-        return 0;
-    return 1;
-}
 
 SolidBucket solidBucketLast(SolidBucket bucket) {
     SolidBucket last = bucket;
@@ -19,12 +10,15 @@ SolidBucket solidBucketLast(SolidBucket bucket) {
     return last;
 }
 
-SolidBucket solidBucketInsert(SolidBucket bucket, Solid solid) {
+SolidBucket solidBucketPush(SolidBucket bucket, Solid solid) {
     SolidBucket new = malloc(sizeof(struct st_solidbucket));
-    if(bucket == NULL)
+    new->solid = solid;
+    if(bucket == NULL) {
+        new->next = NULL;
         return new;
-    SolidBucket last = solidBucketLast(bucket);
-    return bucket;
+    }
+    new->next = bucket;
+    return new;
 }
 
 int solidBucketLength(SolidBucket bucket) {
@@ -40,24 +34,20 @@ Solid solidBucketPop(SolidBucket *bucket) {
     if (bucket == NULL){
         fprintf(stderr, "solidBucketPop received a null pointer!");
     } else if (*bucket == NULL) {
-        return NULL;
+        fprintf(stderr, "solidBucketPop received an empty bucket!");
     }
     SolidBucket resultNode = *bucket;
     Solid result = resultNode->solid;
     *bucket = (*bucket)->next;
     free(resultNode);
-    return result->solid;
-}
-
-SolidBucket solidBucketCopy(SolidBucket bucket) {
-    
+    return result;
 }
 
 void SolidBucketDestroy(SolidBucket bucket) {
-    while (list != NULL) {
-        EdgeBucket next = list->next;
-        free(list);
-        list = next;
+    while (bucket != NULL) {
+        SolidBucket next = bucket->next;
+        free(bucket);
+        bucket = next;
     }
 }
 
@@ -67,8 +57,34 @@ SolidBucket solidBucketFilterInside(SolidBucket bucket, AABB inside) {
     SolidBucket iterator = bucket, result;
     while(iterator != NULL) {
         Solid s = bucket->solid;
-        if(aabbIntersect(s.boundingBox, inside)
-            result = solidBucketInsert(result, s);
+        if(aabbIntersect(s.figure.aabb, inside))
+            result = solidBucketPush(result, s);
     }
     return result;
+}
+
+SolidBucket solidBucketAppend(SolidBucket a, SolidBucket b) {
+    if(a == NULL)
+        return b;
+    solidBucketLast(a)->next = b;
+    return a;
+}
+
+SolidBucket solidBucketSort(SolidBucket bucket) {
+    //base cases
+    if (bucket == NULL || bucket->next == NULL)
+        return bucket;
+    Solid pivot = solidBucketPop(&bucket);
+    SolidBucket less = NULL;
+    SolidBucket greater = NULL;
+    while (bucket != NULL) {
+        Solid b = solidBucketPop(&bucket);
+        if (b.figure.aabb.maxZ <= pivot.figure.aabb.maxZ)
+            less = solidBucketPush(less, b);
+        else 
+            greater = solidBucketPush(greater, b);
+    }
+    less = solidBucketSort(less);
+    greater = solidBucketSort(greater);
+    return solidBucketAppend(greater, solidBucketPush(less, pivot));
 }

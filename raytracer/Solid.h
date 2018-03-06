@@ -3,37 +3,18 @@
 
 #include <SDL2/SDL.h>
 #include "Vector.h"
-
-typedef struct st_aabb {
-    double minX, maxX, minY, maxY, minZ, maxZ;
-} AABB;
-
-typedef struct st_sphere {
-    AABB boundingBox;
-    Vector center;
-    double radius;
-} Sphere;
-
-typedef struct st_triangle {
-    AABB boundingBox;
-    Vector points[3];
-} Triangle;
+#include "Ray.h"
+#include "Figure.h"
 
 typedef struct st_reflection {
-    int miss;
-    Vector intersection;
+    int hit;
+    Vector intersect;
     SDL_Color color;
 } Reflection;
 
-typedef union u_figure {
-    AABB boundingBox;
-    Sphere sphere;
-    Triangle triangle;
-} Figure;
-
 typedef struct st_solid {
     Figure figure;
-    Reflection (*reflect)(Figure, Vector);
+    Reflection (*reflect)(Ray, Figure);
 } Solid;
 
 typedef struct st_solidbucket {
@@ -46,5 +27,21 @@ typedef struct st_kdtree {
     AABB boundingBox;
     struct st_kdtree *left, *right;
 } *KDTree;
+
+SolidBucket solidBucketLast(SolidBucket bucket);
+
+SolidBucket solidBucketPush(SolidBucket bucket, Solid solid);
+
+int solidBucketLength(SolidBucket bucket);
+
+Solid solidBucketPop(SolidBucket *bucket);
+
+void SolidBucketDestroy(SolidBucket bucket);
+
+SolidBucket solidBucketFilterInside(SolidBucket bucket, AABB inside);
+
+SolidBucket solidBucketAppend(SolidBucket a, SolidBucket b);
+
+SolidBucket solidBucketSort(SolidBucket bucket);
 
 #endif

@@ -1,15 +1,21 @@
+#include <float.h>
 #include "Vector.h"
 
 // unit vectors
 const Vector unitX = {1.0, 0.0, 0.0};
 const Vector unitY = {0.0, 1.0, 0.0};
 const Vector unitZ = {0.0, 0.0, 1.0};
+const Vector vectorNone = {DBL_MAX, DBL_MAX, DBL_MAX};
 
 // usually better read as 'zero vector'
 const Vector origin = {0.0, 0.0, 0.0};
 
 double vectorMagnitude(Vector v) {
     return v.x*v.x + v.y*v.y + v.z*v.z;
+}
+
+double vectorDist(Vector u, Vector v) {
+    return vectorMagnitude(vectorDiff(v, u));
 }
 
 Vector vectorNormalize(Vector v) {
@@ -51,4 +57,12 @@ Vector vectorCross(Vector u, Vector v) {
     result.y = u.z*v.x - u.x*v.z;
     result.z = u.x*v.y - u.y*v.x;
     return result;
+}
+
+int vectorEqual(Vector u, Vector v) {
+    return u.x == v.x && u.y == v.y && u.z == v.z;
+}
+
+int isVector(Vector v) {
+    return !vectorEqual(v, vectorNone);
 }

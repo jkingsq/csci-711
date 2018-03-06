@@ -2,10 +2,13 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "Vector.h"
 #include "Matrix.h"
 #include "Ray.h"
+#include "Figure.h"
 #include "Solid.h"
-#include "Vector.h"
+#include "Reflect.h"
+#include "Shader.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -16,7 +19,6 @@ SDL_Rect frame = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
 SDL_Window *window = NULL;
 
 SDL_Surface *windowSurface = NULL;
-SDL_Surface *background = NULL;
 
 SDL_Renderer *renderer = NULL;
 
@@ -47,9 +49,28 @@ int startSDL() {
     return result;
 }
 
+SolidBucket makeObjects() {
+    SolidBucket result = NULL;
+
+    Solid sphere1, sphere2;
+
+    Vector center1 = {-0.75, 1.25, -5.0};
+    Vector center2 = { 0.00, 0.75, -3.5};
+
+    sphere1.figure = makeSphere(center1, 0.5);
+    sphere1.reflect = &shaderSphereDefault;
+
+    sphere2.figure = makeSphere(center2, 0.5);
+    sphere2.reflect = &shaderSphereDefault;
+
+    solidBucketPush(result, sphere2);
+    solidBucketPush(result, sphere1);
+    
+    return result;
+}
+
 void quit() {
     SDL_DestroyWindow(window);
-    SDL_FreeSurface(background);
     window = NULL;
 
     SDL_Quit();
@@ -69,10 +90,11 @@ Ray makeRay(int x, int y) {
 
     Vector planeCorner = vectorScale(-1.0, unitZ);
     planeCorner = vectorDiff(planeCorner, vectorScale(0.5, planeX));
-    planeCorner = vectorDiff(planeCorner, vectorScale(0.5, planeY));
+    planeCorner = vectorSum(planeCorner, vectorScale(0.5, planeY));
 
     result.direction = vectorSum(planeCorner, vectorScale(tx, planeX));
-    result.direction = vectorSum(result.direction, vectorScale(ty, planeY));
+    result.direction = vectorDiff(result.direction, vectorScale(ty, planeY));
+    result.direction = vectorNormalize(result.direction);
 
     return result;
 }
@@ -81,11 +103,9 @@ void draw(SolidBucket objects) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
     for(int i = 0; i < WINDOW_HEIGHT; i++) {
         for(int j = 0; j < WINDOW_WIDTH; j++) {
-            Ray ray = makeRay(j, i);
-            Vector d = vectorNormalize(ray.direction);
-            SDL_SetRenderDrawColor(renderer, fabs(d.x)*255,
-                                             fabs(d.y)*255,
-                                             fabs(d.z)*64, 255);
+            Ray d = makeRay(j, i);
+            SDL_Color color = rayCollision(d, NULL);
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
             SDL_RenderDrawPoint(renderer, j, i);
         }
     }
