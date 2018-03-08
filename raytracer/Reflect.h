@@ -13,4 +13,6 @@ Vector raySphereIntersect(Ray ray, Sphere sphere);
 
 Vector rayTriangleIntersect(Ray ray, Triangle triangle);
 
+Vector rayTriangleTUV(Ray ray, Triangle triangle);
+
 #endif

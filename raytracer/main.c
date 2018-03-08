@@ -52,6 +52,7 @@ int startSDL() {
 SolidBucket makeObjects() {
     SolidBucket result = NULL;
 
+    // Make spheres
     Solid sphere1, sphere2;
 
     Vector center1 = {-0.75, 1.25, 5.0};
@@ -63,6 +64,29 @@ SolidBucket makeObjects() {
     sphere2.figure = makeSphere(center2, 0.5);
     sphere2.reflect = &shaderSphereDefault;
 
+    // Make tile floor
+    Solid tri1, tri2;
+
+    // Corners of the quad
+    Vector ll = {-2.5, 0.0,  5.0};
+    Vector lr = { 2.5, 0.0,  5.0};
+    Vector ul = {-2.5, 0.0, -5.0};
+    Vector ur = { 2.5, 0.0, -5.0};
+
+    //Test triangle
+    Vector test1 = {-0.75, 0.00, 5};
+    Vector test2 = {-1.75, 0.00, 0};
+    Vector test3 = {-1.75, 0.00, 0};
+
+    tri1.figure = makeTriangle(ll, ur, ul);
+//  tri1.figure = makeTriangle(test1, test2, test3);
+    tri2.figure = makeTriangle(ur, lr, ll);
+
+    tri1.reflect = &shaderTriangleTile;
+    tri2.reflect = &shaderTriangleTile;
+
+    result = solidBucketPush(result, tri1);
+    result = solidBucketPush(result, tri2);
     result = solidBucketPush(result, sphere2);
     result = solidBucketPush(result, sphere1);
 
@@ -116,6 +140,10 @@ void draw(SolidBucket objects) {
     SDL_RenderPresent(renderer);
 }
 
+void triangleTest(SolidBucket objects) {
+    
+}
+
 int main(int argc, char* argv[]) {
     if(startSDL()) {
         fprintf(stderr, "Failed to initialize.  Exiting.\n");
@@ -127,7 +155,10 @@ int main(int argc, char* argv[]) {
         SDL_RenderPresent(renderer);
 
         draw(makeObjects());
-        SDL_Delay(2000);
+        SDL_Event event;
+        while(SDL_WaitEvent(&event))
+            if(event.type == SDL_KEYDOWN)
+                break;
     }
     quit();
     return 0;

@@ -88,3 +88,7 @@ SolidBucket solidBucketSort(SolidBucket bucket) {
     greater = solidBucketSort(greater);
     return solidBucketAppend(greater, solidBucketPush(less, pivot));
 }
+
+int isReflection(Reflection r) {
+    return isVector(r.intersect);
+}

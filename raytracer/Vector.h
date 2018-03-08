@@ -29,6 +29,8 @@ double vectorMagnitude(Vector v);
 
 double vectorDist(Vector u, Vector v);
 
+double vectorDot(Vector u, Vector v);
+
 Vector vectorNormalize(Vector v);
 
 int vectorEqual(Vector u, Vector v);

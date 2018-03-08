@@ -13,6 +13,8 @@ add_executable(Raytracer main.c)
 target_link_libraries(Raytracer ${SDL2_LIBRARIES})
 target_link_libraries(Raytracer m)
 
+target_link_libraries(Reflect Solid)
+
 target_link_libraries(Raytracer Vector)
 target_link_libraries(Raytracer Matrix)
 target_link_libraries(Raytracer Figure)

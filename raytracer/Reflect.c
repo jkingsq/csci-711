@@ -6,7 +6,6 @@
 #include "Reflect.h"
 
 const Reflection reflectionNone = {
-    0,          // hit
     VECTOR_NONE, // intersect
     {0, 0, 0, 0}   // color
 };
@@ -27,13 +26,20 @@ Reflection testSolid(Ray ray, Solid solid) {
 Reflection getReflection(Ray ray, SolidBucket objects) {
     Reflection result = reflectionNone;
     SolidBucket object = objects;
+    double distance = INFINITY;
     while(object != NULL) {
         Reflection temp = testSolid(ray, object->solid);
-        if(temp.intersect.z > result.intersect.z)
-            result = temp;
+        if(isReflection(temp)) {
+            double tempDist =
+                vectorMagnitude(vectorDiff(temp.intersect, ray.point));
+            if(tempDist < distance) {
+                distance = tempDist;
+                result = temp;
+            }
+        }
         object = object->next;
     }
-    if(!result.hit)
+    if(!isReflection(result) || distance == INFINITY)
         result.color = background(ray);
     return result;
 }
@@ -76,4 +82,43 @@ Vector raySphereIntersect(Ray ray, Sphere sphere) {
 }
 
 Vector rayTriangleIntersect(Ray ray, Triangle triangle) {
+    Vector tuv = rayTriangleTUV(ray, triangle);
+
+    if(isVector(tuv))
+        return vectorSum(ray.point, vectorScale(tuv.x, ray.direction));
+    else
+        return vectorNone;
+}
+
+Vector rayTriangleTUV(Ray ray, Triangle triangle) {
+    Vector e1 = vectorDiff(triangle.points[1], triangle.points[0]);
+    Vector e2 = vectorDiff(triangle.points[2], triangle.points[0]);
+
+    Vector T = vectorDiff(ray.point, triangle.points[0]);
+    Vector P = vectorCross(ray.direction, e2);
+    Vector Q = vectorCross(T, e1);
+
+    double scale = vectorDot(e1, P);
+    //check if ray is parallel to the triangle's plane
+    if(scale == 0.0) {
+        return vectorNone;
+    }
+
+    double u = vectorDot(P, T) / scale;
+    double v = vectorDot(Q, ray.direction) / scale;
+
+    //check if ray intersects with plane outside triangle bounds
+    if(u < 0.0 || v < 0.0 || u+v > 1) {
+        return vectorNone;
+    }
+
+    double t = vectorDot(Q, e2) / scale;
+
+    //check if ray intersects with plane behind point of origin
+    if(t < 0.0) {
+        return vectorNone;
+    }
+
+    Vector result = {t, u, v};
+    return result;
 }

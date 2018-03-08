@@ -12,20 +12,23 @@ const Vector vectorNone = VECTOR_NONE;
 const Vector origin = {0.0, 0.0, 0.0};
 
 double vectorMagnitude(Vector v) {
-    return v.x*v.x + v.y*v.y + v.z*v.z;
+    if(v.x == INFINITY || v.y == INFINITY || v.z == INFINITY)
+        return INFINITY;
+    else
+        return v.x*v.x + v.y*v.y + v.z*v.z;
 }
 
 double vectorDist(Vector u, Vector v) {
     return vectorMagnitude(vectorDiff(v, u));
 }
 
+double vectorDot(Vector u, Vector v) {
+    return u.x*v.x + u.y*v.y + u.z*v.z;
+}
+
 Vector vectorNormalize(Vector v) {
-    double divisor = vectorMagnitude(v);
-    Vector result = v;
-    result.x /= divisor;
-    result.y /= divisor;
-    result.z /= divisor;
-    return result;
+    double scale = 1.0 / vectorMagnitude(v);
+    return vectorScale(scale, v);
 }
 
 Vector vectorSum(Vector u, Vector v) {

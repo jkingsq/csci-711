@@ -7,6 +7,6 @@
 
 Reflection shaderSphereDefault(Ray ray, Figure fig);
 
-Reflection shaderTriangleDefault(Ray ray, Figure fig);
+Reflection shaderTriangleTile(Ray ray, Figure fig);
 
 #endif

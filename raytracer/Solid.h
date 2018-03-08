@@ -7,7 +7,6 @@
 #include "Figure.h"
 
 typedef struct st_reflection {
-    int hit;
     Vector intersect;
     SDL_Color color;
 } Reflection;
@@ -43,5 +42,7 @@ SolidBucket solidBucketFilterInside(SolidBucket bucket, AABB inside);
 SolidBucket solidBucketAppend(SolidBucket a, SolidBucket b);
 
 SolidBucket solidBucketSort(SolidBucket bucket);
+
+int isReflection(Reflection r);
 
 #endif
