@@ -10,6 +10,8 @@ const Reflection reflectionNone = {
     {0, 0, 0, 0}   // color
 };
 
+extern SolidBucket sceneObjects = NULL;
+
 SDL_Color background(Ray ray) {
     SDL_Color result;
     result.r = 255 - fabs(ray.direction.x) * 255;
@@ -19,16 +21,16 @@ SDL_Color background(Ray ray) {
     return result;
 }
 
-Reflection testSolid(Ray ray, Solid solid) {
-    return (solid.reflect)(ray, solid.figure);
+Reflection testSolid(Ray ray, Solid solid, int recur) {
+    return (solid.reflect)(ray, solid.figure, recur);
 }
 
-Reflection getReflection(Ray ray, SolidBucket objects) {
+Reflection getReflection(Ray ray, SolidBucket objects, int recur) {
     Reflection result = reflectionNone;
     SolidBucket object = objects;
     double distance = INFINITY;
     while(object != NULL) {
-        Reflection temp = testSolid(ray, object->solid);
+        Reflection temp = testSolid(ray, object->solid, recur);
         if(isReflection(temp)) {
             double tempDist =
                 vectorMagnitude(vectorDiff(temp.intersect, ray.point));
@@ -70,8 +72,8 @@ Vector raySphereIntersect(Ray ray, Sphere sphere) {
         omega = fmin(omega1, omega2);
 
     //one intersection
-    } else if(decider ==0){
-        omega = (-1 * b) / (2 * a);
+//  } else if(decider ==0){
+//      omega = (-1 * b) / (2 * a);
 
     //no intersections
     } else {

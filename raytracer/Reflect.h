@@ -7,7 +7,7 @@
 
 extern const Reflection reflectionNone;
 
-Reflection getReflection(Ray ray, SolidBucket objects);
+Reflection getReflection(Ray ray, SolidBucket objects, int recur);
 
 Vector raySphereIntersect(Ray ray, Sphere sphere);
 

@@ -5,8 +5,12 @@
 #include "Figure.h"
 #include "Solid.h"
 
-Reflection shaderSphereDefault(Ray ray, Figure fig);
+Reflection shaderSphereDefault(Ray ray, Figure fig, int recur);
 
-Reflection shaderTriangleTile(Ray ray, Figure fig);
+Reflection shaderSpherePhong(Ray ray, Figure fig, int recur);
+
+Reflection shaderTriangleTile(Ray ray, Figure fig, int recur);
+
+Reflection shaderTilePhong(Ray ray, Figure fig, int recur);
 
 #endif

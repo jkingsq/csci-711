@@ -49,7 +49,7 @@ int startSDL() {
     return result;
 }
 
-SolidBucket makeObjects() {
+SolidBucket defaultScene() {
     SolidBucket result = NULL;
 
     // Make spheres
@@ -59,10 +59,10 @@ SolidBucket makeObjects() {
     Vector center2 = { 0.00, 0.75, 3.5};
 
     sphere1.figure = makeSphere(center1, 0.50);
-    sphere1.reflect = &shaderSphereDefault;
+    sphere1.reflect = &shaderSpherePhong;
 
     sphere2.figure = makeSphere(center2, 0.5);
-    sphere2.reflect = &shaderSphereDefault;
+    sphere2.reflect = &shaderSpherePhong;
 
     // Make tile floor
     Solid tri1, tri2;
@@ -73,26 +73,40 @@ SolidBucket makeObjects() {
     Vector ul = {-2.5, 0.0, -5.0};
     Vector ur = { 2.5, 0.0, -5.0};
 
-    //Test triangle
-    Vector test1 = {-0.75, 0.00, 5};
-    Vector test2 = {-1.75, 0.00, 0};
-    Vector test3 = {-1.75, 0.00, 0};
-
     tri1.figure = makeTriangle(ll, ur, ul);
-//  tri1.figure = makeTriangle(test1, test2, test3);
-    tri2.figure = makeTriangle(ur, lr, ll);
+    tri2.figure = makeTriangle(ur, ll, lr);
 
-    tri1.reflect = &shaderTriangleTile;
-    tri2.reflect = &shaderTriangleTile;
+    tri1.reflect = &shaderTilePhong;
+    tri2.reflect = &shaderTilePhong;
 
     result = solidBucketPush(result, tri1);
     result = solidBucketPush(result, tri2);
     result = solidBucketPush(result, sphere2);
     result = solidBucketPush(result, sphere1);
-
-    if(result == NULL)
-        printf("empty object list");
     
+    return result;
+}
+
+SolidBucket depthTest() {
+    SolidBucket result = NULL;
+
+    Vector sphereFirst = {1.5, 0.0, 5.0};
+    Vector sphereI = {-0.75, 0.0, -2.0};
+    Vector sphereJ = {0.0, 1.0, 0.0};
+
+    for(double i = 0; i <= 10; i++) {
+        for(double j = 0; j <= 2; j++) {
+            Solid sphere;
+            Vector center = sphereFirst;
+            center = vectorSum(center, vectorScale(i, sphereI));
+            center = vectorSum(center, vectorScale(j, sphereJ));
+            sphere.figure = makeSphere(center, 0.25);
+            sphere.reflect = &shaderSpherePhong;
+
+            result = solidBucketPush(result, sphere);
+        }
+    }
+
     return result;
 }
 
@@ -126,15 +140,29 @@ Ray makeRay(int x, int y) {
     return result;
 }
 
+double focalLength = 5.0;
+double focalCoeff = 3.0;
+int dof = 0;
+
 void draw(SolidBucket objects) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
     for(int i = 0; i < WINDOW_HEIGHT; i++) {
         for(int j = 0; j < WINDOW_WIDTH; j++) {
             Ray ray = makeRay(j, i);
-            Reflection reflection = getReflection(ray, objects);
+            Reflection reflection = getReflection(ray, objects, 1);
             SDL_Color color = reflection.color;
-            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
-            SDL_RenderDrawPoint(renderer, j, i);
+
+            if(dof && isReflection(reflection)) {
+                double dist = vectorDist(reflection.intersect, ray.point);
+                double blur = 1 + focalCoeff * fabs(dist - focalLength);
+
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255.0 / blur / blur);
+                SDL_Rect fillArea = {j - blur/2, i- blur/2, blur, blur};
+                SDL_RenderFillRect(renderer, &fillArea);
+            } else {
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+                SDL_RenderDrawPoint(renderer, j, i);
+            }
         }
     }
     SDL_RenderPresent(renderer);
@@ -154,10 +182,12 @@ int main(int argc, char* argv[]) {
         SDL_RenderFillRect(renderer, &frame);
         SDL_RenderPresent(renderer);
 
-        draw(makeObjects());
+        sceneObjects = defaultScene();
+
+        draw(sceneObjects);
         SDL_Event event;
         while(SDL_WaitEvent(&event))
-            if(event.type == SDL_KEYDOWN)
+            if(event.type == SDL_MOUSEBUTTONDOWN)
                 break;
     }
     quit();

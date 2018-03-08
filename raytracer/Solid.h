@@ -13,13 +13,15 @@ typedef struct st_reflection {
 
 typedef struct st_solid {
     Figure figure;
-    Reflection (*reflect)(Ray, Figure);
+    Reflection (*reflect)(Ray, Figure, int);
 } Solid;
 
 typedef struct st_solidbucket {
     Solid solid;
     struct st_solidbucket *next;
 } *SolidBucket;
+
+extern SolidBucket sceneObjects;
 
 typedef struct st_kdtree {
     SolidBucket bucket;
