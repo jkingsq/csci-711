@@ -7,4 +7,6 @@ typedef struct st_ray {
     Vector point, direction;
 } Ray;
 
+Ray rayNudge(Ray r);
+
 #endif

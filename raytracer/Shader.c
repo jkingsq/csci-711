@@ -117,6 +117,7 @@ Reflection shaderTilePhong(Ray ray, Figure fig, int recur) {
 
     if(recur) {
         Ray toLight = {intersect, vL};
+        toLight = rayNudge(toLight);
         Vector between = getReflection(toLight, sceneObjects, 0).intersect;
         
         if(isVector(between) && vectorDist(intersect, between) < vectorDist(intersect, light)) {
@@ -160,6 +161,7 @@ Reflection shaderTileShadow(Ray ray, Figure fig, int recur) {
         Ray toLight;
         toLight.point = intersect;
         toLight.direction = vectorNormalize(vectorDiff(light, intersect));
+        toLight = rayNudge(toLight);
 
         Vector between = getReflection(toLight, sceneObjects, 0).intersect;
 
@@ -186,7 +188,8 @@ Reflection shaderSphereMirror(Ray ray, Figure fig, int recur) {
         Vector projection = vectorScale(vectorDot(vV, normal), normal);
         reflect.direction = vectorDiff(vV,
             vectorScale(2, vectorDiff(vV, projection)));
-        reflect.point = vectorSum(intersect, vectorScale(0.01, reflect.direction));
+        reflect.point = intersect;
+        reflect = rayNudge(reflect);
         Reflection result = getReflection(reflect, sceneObjects, recur-1);
         result.intersect = intersect;
         return result;
