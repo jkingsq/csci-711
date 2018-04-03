@@ -63,7 +63,7 @@ SolidBucket defaultScene() {
     sphere1.reflect = &shaderSpherePhong;
 
     sphere2.figure = makeSphere(center2, 0.5);
-    sphere2.reflect = &shaderSpherePhong;
+    sphere2.reflect = &shaderSphereMirror;
 
     // Make tile floor
     Solid tri1, tri2;
@@ -150,7 +150,7 @@ void draw(SolidBucket objects) {
     for(int i = 0; i < WINDOW_HEIGHT; i++) {
         for(int j = 0; j < WINDOW_WIDTH; j++) {
             Ray ray = makeRay(j, i);
-            Reflection reflection = getReflection(ray, objects, 1);
+            Reflection reflection = getReflection(ray, objects, 5);
             SDL_Color color = reflection.color;
 
             if(dof && isReflection(reflection)) {

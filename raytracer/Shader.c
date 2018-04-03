@@ -171,3 +171,30 @@ Reflection shaderTileShadow(Ray ray, Figure fig, int recur) {
     }
     return result;
 }
+
+Reflection shaderSphereMirror(Ray ray, Figure fig, int recur) {
+    Vector intersect = raySphereIntersect(ray, fig.sphere);
+    if(!isVector(intersect)) {
+            return reflectionNone;
+    }
+    Vector normal = vectorScale(1/fig.sphere.r,
+        vectorDiff(intersect, fig.sphere.c));
+
+    if(recur) {
+        Ray reflect;
+        Vector vV = vectorScale(-1, ray.direction);
+        Vector projection = vectorScale(vectorDot(vV, normal), normal);
+        reflect.direction = vectorDiff(vV,
+            vectorScale(2, vectorDiff(vV, projection)));
+        reflect.point = vectorSum(intersect, vectorScale(0.01, reflect.direction));
+        Reflection result = getReflection(reflect, sceneObjects, recur-1);
+        result.intersect = intersect;
+        return result;
+    } else {
+        SDL_Color noReflect = {0, 0, 0, 0};
+        Reflection result;
+        result.intersect = intersect;
+        result.color = noReflect;
+        return result;
+    }
+}

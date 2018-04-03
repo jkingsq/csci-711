@@ -71,6 +71,12 @@ Vector raySphereIntersect(Ray ray, Sphere sphere) {
 
         omega = fmin(omega1, omega2);
 
+        if(omega <= 0)
+            omega = fmax(omega1, omega2);
+
+        if(omega <= 0)
+            return vectorNone;
+
     //one intersection
 //  } else if(decider ==0){
 //      omega = (-1 * b) / (2 * a);

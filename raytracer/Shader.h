@@ -15,4 +15,6 @@ Reflection shaderTilePhong(Ray ray, Figure fig, int recur);
 
 Reflection shaderTileShadow(Ray ray, Figure fig, int recur);
 
+Reflection shaderSphereMirror(Ray ray, Figure fig, int recur);
+
 #endif
