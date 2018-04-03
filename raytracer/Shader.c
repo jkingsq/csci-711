@@ -142,3 +142,32 @@ Reflection shaderTilePhong(Ray ray, Figure fig, int recur) {
 
     return result;
 }
+
+Reflection shaderTileShadow(Ray ray, Figure fig, int recur) {
+
+    Vector tuv = rayTriangleTUV(ray, fig.triangle);
+    if(!isVector(tuv)){
+        return reflectionNone;
+    }
+    SDL_Color lit = {255, 0, 0, 255};
+    SDL_Color unlit = {0, 0, 255};
+    Reflection result;
+
+    Vector intersect = vectorSum(ray.point, vectorScale(tuv.x, ray.direction));
+    result.intersect = intersect;
+
+    if(recur) {
+        Ray toLight;
+        toLight.point = intersect;
+        toLight.direction = vectorNormalize(vectorDiff(light, intersect));
+
+        Vector between = getReflection(toLight, sceneObjects, 0).intersect;
+
+        if(isVector(between) && vectorDist(intersect, between) > vectorDist(intersect, light)) {
+            result.color = unlit;
+        } else {
+            result.color = lit;
+        }
+    }
+    return result;
+}

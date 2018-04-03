@@ -46,6 +46,7 @@ int startSDL() {
         }
     }
     renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
     return result;
 }
 
@@ -141,7 +142,7 @@ Ray makeRay(int x, int y) {
 }
 
 double focalLength = 5.0;
-double focalCoeff = 3.0;
+double focalCoeff = 1.5;
 int dof = 0;
 
 void draw(SolidBucket objects) {
@@ -154,9 +155,10 @@ void draw(SolidBucket objects) {
 
             if(dof && isReflection(reflection)) {
                 double dist = vectorDist(reflection.intersect, ray.point);
-                double blur = 1 + focalCoeff * fabs(dist - focalLength);
+                double blur = fmax(1, focalCoeff * fabs(dist - focalLength));
+                double opacity = ceil(255.0 / blur / blur);
 
-                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255.0 / blur / blur);
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, opacity);
                 SDL_Rect fillArea = {j - blur/2, i- blur/2, blur, blur};
                 SDL_RenderFillRect(renderer, &fillArea);
             } else {
@@ -184,6 +186,7 @@ int main(int argc, char* argv[]) {
 
         sceneObjects = defaultScene();
 
+        draw(NULL);
         draw(sceneObjects);
         SDL_Event event;
         while(SDL_WaitEvent(&event))

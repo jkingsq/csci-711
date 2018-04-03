@@ -13,4 +13,6 @@ Reflection shaderTriangleTile(Ray ray, Figure fig, int recur);
 
 Reflection shaderTilePhong(Ray ray, Figure fig, int recur);
 
+Reflection shaderTileShadow(Ray ray, Figure fig, int recur);
+
 #endif
