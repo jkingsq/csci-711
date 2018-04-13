@@ -15,7 +15,7 @@ double vectorMagnitude(Vector v) {
     if(v.x == INFINITY || v.y == INFINITY || v.z == INFINITY)
         return INFINITY;
     else
-        return v.x*v.x + v.y*v.y + v.z*v.z;
+        return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
 
 double vectorDist(Vector u, Vector v) {
