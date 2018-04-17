@@ -17,4 +17,8 @@ Reflection shaderTileShadow(Ray ray, Figure fig, int recur);
 
 Reflection shaderSphereMirror(Ray ray, Figure fig, int recur);
 
+Reflection shaderTileMirror(Ray ray, Figure fig, int recur);
+
+Reflection shaderSphereGlass(Ray ray, Figure fig, int recur);
+
 #endif
