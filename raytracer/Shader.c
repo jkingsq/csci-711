@@ -14,7 +14,7 @@ Reflection shaderSphereDefault(Ray ray, Figure fig, int recur) {
     Reflection result;
     Vector normal = vectorScale(1/fig.sphere.r,
         vectorDiff(intersect, fig.sphere.c));
-    
+
     result.color.r = fabs(normal.x)*255;
     result.color.g = fabs(normal.y)*255;
     result.color.b = fmax(0, normal.z)*255;
@@ -117,7 +117,7 @@ Reflection shaderTilePhong(Ray ray, Figure fig, int recur) {
         Ray toLight = {intersect, nvL};
         toLight = rayNudge(toLight);
         Vector between = getReflection(toLight, sceneObjects, 0).intersect;
-        
+
         if(isVector(between) && vectorDist(intersect, between) < vectorDist(intersect, light)) {
             diffuse = vectorScale(0, diffuse);
         } else {

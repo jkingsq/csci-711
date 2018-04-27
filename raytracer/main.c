@@ -183,7 +183,7 @@ void draw(SolidBucket objects) {
                 for(int k = 0; k < dof * focalRings; k++) {
                     double theta = 2.0 * M_PI * (double)(k%dof) / (double)dof +
                         (i%2 ? M_PI / (double)dof : 0);
-                    
+
                     double radius = (1 + k / dof) * aperture / (double)focalRings;
                     Vector lookat = vectorScale(-1, unitZ);
                     Ray r = rayCircleSample(ray, lookat, radius, theta, focalLength);

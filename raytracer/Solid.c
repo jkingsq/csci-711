@@ -81,7 +81,7 @@ SolidBucket solidBucketSort(SolidBucket bucket) {
         Solid b = solidBucketPop(&bucket);
         if (b.figure.aabb.maxZ <= pivot.figure.aabb.maxZ)
             less = solidBucketPush(less, b);
-        else 
+        else
             greater = solidBucketPush(greater, b);
     }
     less = solidBucketSort(less);

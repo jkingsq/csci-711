@@ -40,7 +40,7 @@ Mat4 mat4Ortho(double left, double right, double bottom, double top,
 // Computes the product of two matrices.
 Mat4 mat4Prod(Mat4 mA, Mat4 mB);
 
-// Yields the first three components of the product of the given matrix and 
+// Yields the first three components of the product of the given matrix and
 // vector. Assumes the w component of the vector is 1
 Vector mat4VectorProd(Mat4 m, Vector v);
 
