@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "Vector.h"
 #include "Matrix.h"
@@ -46,7 +47,7 @@ int startSDL() {
         }
     }
     renderer = SDL_CreateRenderer(window, -1, 0);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     return result;
 }
 
@@ -63,7 +64,7 @@ SolidBucket defaultScene() {
     sphere1.reflect = &shaderSpherePhong;
 
     sphere2.figure = makeSphere(center2, 0.5);
-    sphere2.reflect = &shaderSphereMirror;
+    sphere2.reflect = &shaderSpherePhong;
 
     // Make tile floor
     Solid tri1, tri2;
@@ -84,7 +85,7 @@ SolidBucket defaultScene() {
     result = solidBucketPush(result, tri2);
     result = solidBucketPush(result, sphere2);
     result = solidBucketPush(result, sphere1);
-    
+
     return result;
 }
 
@@ -141,29 +142,69 @@ Ray makeRay(int x, int y) {
     return result;
 }
 
-double focalLength = 5.0;
-double focalCoeff = 1.5;
-int dof = 0;
+double focalLength = 11.0;
+double aperture = 0.20;
+double blurCoeff = 1.5;
+int dof = 64;
+int focalRings = 16;
+int maxRecur = 5;
 
 void draw(SolidBucket objects) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+//  for(int i = 0; i < WINDOW_HEIGHT; i++) {
+//      for(int j = 0; j < WINDOW_WIDTH; j++) {
+//          Ray ray = makeRay(j, i);
+//          Reflection reflection = getReflection(ray, NULL, 1);
+//          SDL_Color color = reflection.color;
+//          SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+//          SDL_RenderDrawPoint(renderer, j, i);
+//      }
+//  }
+
+    Reflection samples[1 + dof*focalRings];
+    Uint32 renderStart = SDL_GetTicks();
     for(int i = 0; i < WINDOW_HEIGHT; i++) {
         for(int j = 0; j < WINDOW_WIDTH; j++) {
             Ray ray = makeRay(j, i);
-            Reflection reflection = getReflection(ray, objects, 5);
+            Reflection reflection = getReflection(ray, objects, maxRecur);
             SDL_Color color = reflection.color;
 
-            if(dof && isReflection(reflection)) {
-                double dist = vectorDist(reflection.intersect, ray.point);
-                double blur = fmax(1, focalCoeff * fabs(dist - focalLength));
-                double opacity = ceil(255.0 / blur / blur);
+            if(dof==1) {
+                if(isReflection(reflection)) {
+                    double dist = vectorDist(reflection.intersect, ray.point);
+                    double blur = fmax(1, blurCoeff * fabs(dist - focalLength));
+                    double opacity = ceil(255.0 / blur / blur);
 
-                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, opacity);
-                SDL_Rect fillArea = {j - blur/2, i- blur/2, blur, blur};
-                SDL_RenderFillRect(renderer, &fillArea);
-            } else {
+                    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, opacity);
+                    SDL_Rect fillArea = {j - blur/2, i- blur/2, blur, blur};
+                    SDL_RenderFillRect(renderer, &fillArea);
+                }
+            } else if(dof) {
+                for(int k = 0; k < dof * focalRings; k++) {
+                    double theta = 2.0 * M_PI * (double)(k%dof) / (double)dof +
+                        (i%2 ? M_PI / (double)dof : 0);
+                    
+                    double radius = (1 + k / dof) * aperture / (double)focalRings;
+                    Vector lookat = vectorScale(-1, unitZ);
+                    Ray r = rayCircleSample(ray, lookat, radius, theta, focalLength);
+                    samples[k] = getReflection(r, objects, maxRecur);
+                }
+                samples[dof * focalRings + 1] = reflection;
+
+                color = averageReflections(samples, dof * focalRings + 1);
+
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
                 SDL_RenderDrawPoint(renderer, j, i);
+            } else if(!dof) {
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+                SDL_RenderDrawPoint(renderer, j, i);
+            }
+            Uint32 t = SDL_GetTicks();
+            if(t-renderStart >= 10000) {
+                renderStart = t;
+                double progress = i * WINDOW_WIDTH + j;
+                double total = WINDOW_WIDTH * WINDOW_HEIGHT;
+                printf("%f%\n", 100.0 * progress / total);
             }
         }
     }
@@ -171,7 +212,7 @@ void draw(SolidBucket objects) {
 }
 
 void triangleTest(SolidBucket objects) {
-    
+
 }
 
 int main(int argc, char* argv[]) {
@@ -180,18 +221,25 @@ int main(int argc, char* argv[]) {
     } else {
         //draw rectangle
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-
         SDL_RenderFillRect(renderer, &frame);
         SDL_RenderPresent(renderer);
 
-        sceneObjects = defaultScene();
-
         draw(NULL);
+        printf("Rendered empty scene\n");
+
+        sceneObjects = depthTest();
+
         draw(sceneObjects);
+        printf("Finished rendering.\a\n");
         SDL_Event event;
-        while(SDL_WaitEvent(&event))
-            if(event.type == SDL_MOUSEBUTTONDOWN)
+        while(SDL_WaitEvent(&event)){
+            if(event.type == SDL_MOUSEBUTTONDOWN){
                 break;
+            } else {
+                SDL_RenderPresent(renderer);
+                SDL_RenderPresent(renderer);
+            }
+        }
     }
     quit();
     return 0;

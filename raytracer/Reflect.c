@@ -46,6 +46,25 @@ Reflection getReflection(Ray ray, SolidBucket objects, int recur) {
     return result;
 }
 
+SDL_Color averageReflections(Reflection *reflections, int count) {
+    double r = 0, g = 0, b = 0;
+    for(int i = 0; i < count; i++) {
+        Reflection ref = reflections[i];
+//      r+= pow((double)ref.color.r, 2.0)/(double)count;
+//      g+= pow((double)ref.color.g, 2.0)/(double)count;
+//      b+= pow((double)ref.color.b, 2.0)/(double)count;
+        r+=(pow((double)ref.color.r, 2))/(double)count;
+        g+=(pow((double)ref.color.g, 2))/(double)count;
+        b+=(pow((double)ref.color.b, 2))/(double)count;
+    }
+    r = sqrt(r);
+    g = sqrt(g);
+    b = sqrt(b);
+
+    SDL_Color result = {floor(r), floor(g), floor(b)};
+    return result;
+}
+
 Vector raySphereIntersect(Ray ray, Sphere sphere) {
     double a, b, c;
 

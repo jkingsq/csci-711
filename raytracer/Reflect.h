@@ -9,6 +9,8 @@ extern const Reflection reflectionNone;
 
 Reflection getReflection(Ray ray, SolidBucket objects, int recur);
 
+SDL_Color averageReflections(Reflection *reflections, int count);
+
 Vector raySphereIntersect(Ray ray, Sphere sphere);
 
 Vector rayTriangleIntersect(Ray ray, Triangle triangle);

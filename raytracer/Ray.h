@@ -9,4 +9,9 @@ typedef struct st_ray {
 
 Ray rayNudge(Ray r);
 
+Vector rayTravel(Ray r, double d);
+
+Ray rayCircleSample(Ray r, Vector lookat, double radius, double theta,
+        double focalLength);
+
 #endif

@@ -11,6 +11,9 @@ add_library(Solid Solid.c)
 add_library(Reflect Reflect.c)
 add_library(Shader Shader.c)
 add_executable(Raytracer main.c)
+
+target_link_libraries(Ray m)
+
 target_link_libraries(Raytracer ${SDL2_LIBRARIES})
 target_link_libraries(Raytracer m)
 
