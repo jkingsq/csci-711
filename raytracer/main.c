@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "Vector.h"
 #include "Matrix.h"
@@ -61,10 +62,10 @@ SolidBucket defaultScene() {
     Vector center2 = { 0.00, 0.75, 3.5};
 
     sphere1.figure = makeSphere(center1, 0.50);
-    sphere1.reflect = &shaderSpherePhong;
+    sphere1.reflect = &shaderSphereGlass;
 
     sphere2.figure = makeSphere(center2, 0.5);
-    sphere2.reflect = &shaderSpherePhong;
+    sphere2.reflect = &shaderSphereMirror;
 
     // Make tile floor
     Solid tri1, tri2;
@@ -85,6 +86,19 @@ SolidBucket defaultScene() {
     result = solidBucketPush(result, tri2);
     result = solidBucketPush(result, sphere2);
     result = solidBucketPush(result, sphere1);
+
+    return result;
+}
+
+SolidBucket transmitTest() {
+    SolidBucket result = defaultScene();
+
+    Solid sphere; 
+    Vector center = {-0.75, 1.25, 0.0};
+    sphere.figure = makeSphere(center, 0.60);
+    sphere.reflect = &shaderSpherePhong;
+
+    result = solidBucketPush(result, sphere);
 
     return result;
 }
@@ -145,7 +159,7 @@ Ray makeRay(int x, int y) {
 double focalLength = 11.0;
 double aperture = 0.20;
 double blurCoeff = 1.5;
-int dof = 64;
+int dof = 0;
 int focalRings = 16;
 int maxRecur = 5;
 
@@ -227,14 +241,36 @@ int main(int argc, char* argv[]) {
         draw(NULL);
         printf("Rendered empty scene\n");
 
-        sceneObjects = depthTest();
+        sceneObjects = transmitTest();
 
         draw(sceneObjects);
-        printf("Finished rendering.\a\n");
+        printf("Finished rendering.\nPress s to save a screenshot.\n\a");
         SDL_Event event;
+
+        //used for timestamping screenshots
+        time_t curtime;
+        struct tm *loctime;
+        int fnLength = 256;
+        char filename[fnLength];
+        filename[0] = '\0';
+
+        //screenshot surface
+        SDL_Surface *screenshot = SDL_CreateRGBSurface(0,
+            WINDOW_WIDTH, WINDOW_HEIGHT, 32,
+            0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+
         while(SDL_WaitEvent(&event)){
             if(event.type == SDL_MOUSEBUTTONDOWN){
                 break;
+            } else if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_s) {
+                SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_ARGB8888,
+                    screenshot->pixels, screenshot->pitch);
+                curtime = time(NULL);
+                loctime = localtime(&curtime);
+                strftime(filename, fnLength, "%b%d%H%M%S.bmp", loctime);
+                printf("Saved screenshot: %s\n", filename);
+
+                SDL_SaveBMP(screenshot, filename);
             } else {
                 SDL_RenderPresent(renderer);
                 SDL_RenderPresent(renderer);

@@ -228,9 +228,21 @@ Reflection shaderSphereMirror(Ray ray, Figure fig, int recur) {
 
 Vector refract(Vector d, Vector n, double eta) {
     double dot = vectorDot(d, n);
-    return vectorNormalize(vectorSum(
-        vectorScale(eta, vectorDiff(d, vectorScale(dot, n))),
-        vectorScale(sqrt(1-(eta*eta * (1 - dot*dot))), n)));
+    Vector normal = n;
+    if(dot < 0.0) {
+        normal = vectorScale(-1, normal);
+        dot = vectorDot(d, normal);
+    }
+    double decider = 1-(eta*eta * (1 - dot*dot));
+    Vector transmit = vectorNormalize(vectorSum(
+        vectorScale(eta, vectorDiff(d, vectorScale(dot, normal))),
+        vectorScale(sqrt(decider), normal)));
+    
+    if(decider < 0.0)
+        return reflect(d, normal);
+    else
+        return transmit;
+        
 }
 
 Reflection shaderSphereGlass(Ray ray, Figure fig, int recur) {
@@ -246,7 +258,7 @@ Reflection shaderSphereGlass(Ray ray, Figure fig, int recur) {
     Reflection result;
 
     if(recur) {
-        double etaI = 1.0, etaT = 0.95;
+        double etaI = 1.0, etaT = 0.80;
 
         Vector t = refract(ray.direction, normal, etaI/etaT);
         Ray internal = {intersect, t};

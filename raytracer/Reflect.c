@@ -84,7 +84,7 @@ Vector raySphereIntersect(Ray ray, Sphere sphere) {
     //distance to closest intersection
     double omega;
     //two intersections
-    if(decider <= 1) {
+    if(decider <= 1 && decider >= 0) {
         double omega1 = (-1 * b + sqrtf(decider)) / (2 * a);
         double omega2 = (-1 * b - sqrtf(decider)) / (2 * a);
 
