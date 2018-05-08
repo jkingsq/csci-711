@@ -1,0 +1,16 @@
+***To build this program***
+
+Running 'make' produces an executable called Raytracer.  The only external
+dependency of this program is SDL2, for which CMake should resolve at least the
+proper linker options.  The location of the SDL2 header files may vary between
+installations, so if the header files are not found you may want to try running
+the included alt-sdl-path.sh script.
+
+***To use this program***
+The program first draws an empty scene, followed by a scene populated with
+objects specified in the code.  Once the second scene is rendered, you may click
+the body of the window to close the program, or press s to save a bitmap image
+of the screen.  Since scene parameters are controlled in the code, images of
+different scenes or different parameters are obtained by either modifying the
+code or checking out another branch.  The master branch renders the default
+scene with no depth of field effects.
