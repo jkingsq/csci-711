@@ -95,7 +95,7 @@ SolidBucket transmitTest() {
 
     Solid sphere; 
     Vector center = {-0.75, 1.25, 0.0};
-    sphere.figure = makeSphere(center, 0.60);
+    sphere.figure = makeSphere(center, 0.50);
     sphere.reflect = &shaderSpherePhong;
 
     result = solidBucketPush(result, sphere);
