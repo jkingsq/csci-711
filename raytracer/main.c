@@ -241,10 +241,10 @@ int main(int argc, char* argv[]) {
         draw(NULL);
         printf("Rendered empty scene\n");
 
-        sceneObjects = transmitTest();
+        sceneObjects = defaultScene();
 
         draw(sceneObjects);
-        printf("Finished rendering.\nPress s to save a screenshot.\n\a");
+        printf("Finished rendering.\nPress s to save a screenshot.\a\n");
         SDL_Event event;
 
         //used for timestamping screenshots
