@@ -159,7 +159,7 @@ Ray makeRay(int x, int y) {
 double focalLength = 11.0;
 double aperture = 0.20;
 double blurCoeff = 1.5;
-int dof = 0;
+int dof = 32;
 int focalRings = 16;
 int maxRecur = 5;
 
@@ -241,7 +241,7 @@ int main(int argc, char* argv[]) {
         draw(NULL);
         printf("Rendered empty scene\n");
 
-        sceneObjects = defaultScene();
+        sceneObjects = depthTest();
 
         draw(sceneObjects);
         printf("Finished rendering.\nPress s to save a screenshot.\a\n");
