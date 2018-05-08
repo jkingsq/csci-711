@@ -55,5 +55,45 @@ Foreground sphere pictured with an index of refraction of 0.8, with an additiona
 <br/>
 Foreground sphere pictured with an index of refraction of 1.5, inverting the scene behind it.
 </p>
+
+<hr/>
+<h3>Depth of Field Images</h3>
+<p>
+<img src="no-dof.png">
+<br/>
+This is the test scene used for assessing depth of field effects.
+<br/>
+<br/>
+<img src="dof-bad.png">
+<br/>
+This was the first attempt at implementing the "bokeh" approach to depth of field, shown in the midterm presentation.
+<br/>
+<br/>
+<img src="basic-dof.png">
+<br/>
+This was the most convincing image achieved with the final implementation of the "bokeh" approach.
+<br/>
+<br/>
+<img src="dof-focal-10.png">
+<br/>
+Here the scene is rendered using the physically-based approach, simulating an aperture with a 0.2 diameter and focal length of 11 in the space of the scene.
+<br/>
+<br/>
+<img src="dof-0.2-aperture.png">
+<br/>
+The parameters here are the same as the above scene, except that the focal length is change slightly to mitigate aliasing around the edges of the spheres in the depth of field.
+<br/>
+<br/>
+<img src="dof-0.1-aperture.png">
+<br/>
+Here, the same parameters are used with an aperture of 0.1, producing a longer depth of field.
+<br/>
+<br/>
+<img src="dof-default-scene.png">
+<br/>
+Here, the default scene is rendered with an aperture of 0.4, and a focal length of 3 so that only the foreground sphere falls within the depth of field.
+<br/>
+<br/>
+
 </body>
 </html>
